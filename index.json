@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "packageId": "org.meilox.source.netease",
+      "providerId": "netease",
+      "name": "网易云音乐",
+      "version": "0.1.1",
+      "repository": "https://github.com/NEORUAA/MeiloX-Netease-Source",
+      "packageUrl": "https://raw.githubusercontent.com/NEORUAA/MeiloX-Netease-Source/2adcc9b87ed4f98262de9ab62ff92c444c3fe74a/netease.meisource",
+      "sha256": "38d19d925085b271afaf5af13f35b7016b1bba67478a5272ed7b37dbb813c11f",
+      "apiVersion": 2
+    },
+    {
+      "packageId": "org.meilox.qqmusic",
+      "providerId": "qqmusic",
+      "name": "QQ 音乐",
+      "version": "0.3.1",
+      "repository": "https://github.com/NEORUAA/MeiloX-QQMusic-Source",
+      "packageUrl": "https://raw.githubusercontent.com/NEORUAA/MeiloX-QQMusic-Source/482665a199cdb51ecf5939f00c96f82a79a4c5f7/qq-music.meisource",
+      "sha256": "ee3c5a6362e9c4015b47dcfde955b5f7708ec90bf85fa2781e589bcf34e063fa",
+      "apiVersion": 2
+    }
+  ]
+}
