@@ -5,10 +5,10 @@
       "packageId": "org.meilox.source.netease",
       "providerId": "netease",
       "name": "网易云音乐",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "repository": "https://github.com/NEORUAA/MeiloX-Netease-Source",
-      "packageUrl": "https://raw.githubusercontent.com/NEORUAA/MeiloX-Netease-Source/b07dcc3ba6767f3b10c41ff0652b1dce0f8e5594/netease.meisource",
-      "sha256": "0a9a1195de22dc6acc71a4cd45acae4f0c004e7a594f5344de61301bd89fc83a",
+      "packageUrl": "https://raw.githubusercontent.com/NEORUAA/MeiloX-Netease-Source/bebc6e2d2355cf2d846bf440eda6480bedb04ec8/netease.meisource",
+      "sha256": "f68282881ddfdb32aa6d96e8875696a66043a12546a70f64536721a82e86a7c2",
       "apiVersion": 2
     },
     {
