@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": ["schemaVersion", "sources"],
   "properties": {
-    "schemaVersion": {"const": 1},
+    "schemaVersion": {"const": 2},
     "sources": {
       "type": "array",
       "maxItems": 200,
@@ -16,15 +16,13 @@
     "source": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["packageId", "providerId", "name", "version", "repository", "packageUrl", "sha256", "apiVersion"],
+      "required": ["packageId", "providerId", "name", "repository", "packagePath", "apiVersion"],
       "properties": {
         "packageId": {"type": "string", "minLength": 3, "maxLength": 80, "pattern": "^[a-z][a-z0-9._-]{2,79}$"},
         "providerId": {"type": "string", "minLength": 3, "maxLength": 80, "pattern": "^[a-z][a-z0-9._-]{2,79}$"},
         "name": {"type": "string", "minLength": 1, "maxLength": 100, "pattern": "^[^\\u0000-\\u001f\\u007f]+$"},
-        "version": {"type": "string", "maxLength": 50, "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"},
         "repository": {"type": "string", "maxLength": 250, "pattern": "^https://github\\.com/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9_.-]{1,100}$"},
-        "packageUrl": {"type": "string", "maxLength": 1000, "pattern": "^https://raw\\.githubusercontent\\.com/[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9_.-]{1,100}/[a-f0-9]{40}/([A-Za-z0-9][A-Za-z0-9_.-]*/)*[A-Za-z0-9][A-Za-z0-9_.-]*\\.meisource$"},
-        "sha256": {"type": "string", "pattern": "^(?!0{64}$)[a-f0-9]{64}$"},
+        "packagePath": {"type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*[A-Za-z0-9]\\.meisource$"},
         "apiVersion": {"type": "integer", "enum": [1, 2]}
       }
     }

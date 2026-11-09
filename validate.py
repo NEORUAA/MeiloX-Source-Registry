@@ -3,7 +3,6 @@
 
 import argparse
 import copy
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -95,40 +94,34 @@ def validate(value, schema):
         require(source["name"].strip() == source["name"] and bool(source["name"].strip()), path, "name must not contain surrounding whitespace")
         repository = source["repository"].removeprefix("https://github.com/")
         require(not repository.endswith(".git") and all(part not in (".", "..") for part in repository.split("/")), path, "repository must be canonical")
-        location = source["packageUrl"].removeprefix("https://raw.githubusercontent.com/").split("/")
-        require("/".join(location[:2]).casefold() == repository.casefold(), path, "packageUrl must belong to repository")
-        require(all(part not in (".", "..") for part in location), path, "packageUrl must not contain traversal")
+        package_path = source["packagePath"]
+        require(not package_path.startswith("/") and all(part not in (".", "..", "") for part in package_path.split("/")),
+                path, "packagePath must be a relative path without traversal")
+        require(package_path.endswith(".meisource"), path, "packagePath must name a .meisource package")
         packages.add(package)
         providers.add(provider)
     return value
 
 
 def self_test(schema):
-    seed = {"schemaVersion": 1, "sources": [{
+    seed = {"schemaVersion": 2, "sources": [{
         "packageId": "org.example.source", "providerId": "example", "name": "Example",
-        "version": "1.0.0", "repository": "https://github.com/example/source",
-        "packageUrl": "https://raw.githubusercontent.com/example/source/" + "a" * 40 + "/dist/example.meisource",
-        "sha256": hashlib.sha256(b"offline metadata fixture").hexdigest(), "apiVersion": 2,
+        "repository": "https://github.com/example/source",
+        "packagePath": "dist/example.meisource", "apiVersion": 2,
     }]}
     validate(seed, schema)
-    validate({"schemaVersion": 1, "sources": []}, schema)
+    validate({"schemaVersion": 2, "sources": []}, schema)
     ready = copy.deepcopy(seed)
-    for version in ("0.0.0", "1.0.0-alpha.1", "1.0.0-alpha.beta", "1.0.0-0", "1.0.0+build.001", "1.0.0-rc.1+sha.abc"):
-        valid = copy.deepcopy(seed)
-        valid["sources"][0]["version"] = version
-        validate(valid, schema)
     cases = [
         ("packageId", "bad id"), ("packageId", "Org.Example"), ("packageId", "a" * 81),
         ("providerId", "ab"), ("providerId", "Uppercase"), ("providerId", "a" * 81),
-        ("providerId", "local"), ("version", "1.0.0+" + "x" * 45), ("name", " Example"),
-        ("name", "Bad\nname"), ("version", "latest"), ("apiVersion", True), ("apiVersion", 3),
+        ("providerId", "local"), ("name", " Example"), ("name", "Bad\nname"),
+        ("apiVersion", True), ("apiVersion", 3),
         ("repository", "https://github.com.evil.test/example/source"),
         ("repository", "http://github.com/example/source"),
-        ("packageUrl", "https://raw.githubusercontent.com/example/source/main/example.meisource"),
-        ("packageUrl", "https://raw.githubusercontent.com/other/source/" + "a" * 40 + "/example.meisource"),
-        ("packageUrl", "https://raw.githubusercontent.com/example/source/" + "a" * 40 + "/../example.meisource"),
-        ("packageUrl", ready["sources"][0]["packageUrl"] + "?token=private"),
-        ("sha256", "0" * 64), ("sha256", None), ("packageUrl", None),
+        ("packagePath", "../example.meisource"), ("packagePath", "main/example.zip"),
+        ("packagePath", "/example.meisource"), ("packagePath", "example.meisource?token=private"),
+        ("packagePath", "example.meisource/extra"), ("packagePath", None),
     ]
     def rejected(value):
         try:
@@ -140,11 +133,7 @@ def self_test(schema):
         invalid = copy.deepcopy(ready)
         invalid["sources"][0][key] = item
         rejected(invalid)
-    for version in ("01.0.0", "1.01.0", "1.0.00", "1.0.0-01", "1.0.0-alpha.01", "1.0.0+", "1.0.0-", "1.0.0-alpha..1"):
-        invalid = copy.deepcopy(seed)
-        invalid["sources"][0]["version"] = version
-        rejected(invalid)
-    for key in ("packageId", "providerId", "packageUrl", "sha256"):
+    for key in ("packageId", "providerId", "packagePath"):
         invalid = copy.deepcopy(ready)
         del invalid["sources"][0][key]
         rejected(invalid)
@@ -158,7 +147,7 @@ def self_test(schema):
     invalid["sources"][0]["permissions"] = {"network": ["unreviewed.example"]}
     rejected(invalid)
     try:
-        json.loads('{"schemaVersion":1,"schemaVersion":1}', object_pairs_hook=reject_duplicates)
+        json.loads('{"schemaVersion":2,"schemaVersion":2}', object_pairs_hook=reject_duplicates)
     except ValidationError:
         pass
     else:
